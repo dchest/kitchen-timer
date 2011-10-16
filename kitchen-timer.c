@@ -17,13 +17,13 @@
 #include <gtk/gtk.h>
 #include <glib.h>
 
-GtkWidget *window;
-GtkWidget *box;
-GtkWidget *start_btn;
-GtkWidget *time_spin;
+static GtkWidget *window;
+static GtkWidget *box;
+static GtkWidget *start_btn;
+static GtkWidget *time_spin;
 
-GTimer    *timer;
-gdouble    time_goal;  /* how much time to count in seconds */
+static GTimer    *timer;
+static gdouble    time_goal;  /* how much time to count in seconds */
 
 static void start_timer();
 static void stop_timer();
@@ -52,7 +52,7 @@ ding_dong()
 	
 	label = gtk_label_new("It's about time!");
 
-	g_signal_connect_swapped (dialog,
+	g_signal_connect_swapped(dialog,
                              "response",
                              G_CALLBACK(gtk_widget_destroy),
                              dialog);
