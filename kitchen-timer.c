@@ -41,7 +41,7 @@ ding_dong()
 	gdk_beep(); /* TODO sound alert */
   
 	/* Show message dialog */
-	dialog = gtk_dialog_new_with_buttons("Message",
+	dialog = gtk_dialog_new_with_buttons("Time out",
                                          GTK_WINDOW(window),
                                          GTK_DIALOG_DESTROY_WITH_PARENT,
                                          GTK_STOCK_OK,
@@ -154,6 +154,7 @@ main(int argc, char *argv[])
 	
 	/* Window */
 	window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+	gtk_window_set_title(GTK_WINDOW(window), "Kitchen Timer");
 	g_signal_connect(window, "destroy", G_CALLBACK(destroy_cb), NULL);
 	gtk_container_set_border_width(GTK_CONTAINER(window), 10);
 	
