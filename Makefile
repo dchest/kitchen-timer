@@ -1,16 +1,21 @@
 CC=gcc
-CFLAGS=-g -Wall
-PKG_CONFIG=-export-dynamic `pkg-config --libs --cflags gtk+-2.0`
+CFLAGS=-c -Wall
+CFLAGS+=`pkg-config --cflags gtk+-2.0`
+GTK_LIBS=`pkg-config --libs gtk+-2.0`
 
-SRCS=kitchen-timer.c
-OBJS=$(SRCS:.c=.o)
+
+SRC=kitchen-timer.c
+OBJ=$(SRC:.c=.o)
 EXE=kitchen-timer
 
-all: $(SRCS) $(EXE)
+all: $(SRC) $(EXE)
 
-$(EXE): $(OBJS)
-	$(CC) $(CFLAGS) $(LDFLAGS) $(OBJS) -o $(EXE) $(PKG_CONFIG)
+$(EXE): $(OBJ)
+	$(CC) $(LDFLAGS) $(GTK_LIBS) $(OBJ) -o $@
+
+.c.o:
+	$(CC) $(CFLAGS) $< -o $@
 
 clean:
-	rm $(OBJS) $(EXE)
+	rm $(OBJ) $(EXE)
 
