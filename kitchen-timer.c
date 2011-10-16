@@ -61,6 +61,7 @@ ding_dong()
                              dialog);
 
 	gtk_container_add(GTK_CONTAINER(content_area), label);
+	gtk_window_present(GTK_WINDOW(window));
 	gtk_widget_show_all(dialog);
 }
 
