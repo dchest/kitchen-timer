@@ -65,12 +65,13 @@ ding_dong()
 }
 
 static void
-set_pbar_value(gdouble n)
+set_pbar_value(gdouble label, gdouble frac)
 {
 	char s[256];
 
-	(void)snprintf(s, sizeof(s), "%.0f", n);
+	(void)snprintf(s, sizeof(s), "%.0f", label);
 	gtk_progress_bar_set_text(GTK_PROGRESS_BAR(time_pbar), s);
+	gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(time_pbar), frac);
 }
 
 static gboolean
@@ -82,9 +83,8 @@ timeout_cb(gpointer data)
 	gdk_threads_enter();
 	if (timer != NULL) {
 		elapsed = g_timer_elapsed(timer, NULL);
-		set_pbar_value(time_goal - elapsed);
-		gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(time_pbar),
-				MAX(0.0, 1.0 - elapsed / time_goal));
+		set_pbar_value(time_goal - elapsed, 
+			       MAX(0.0, 1.0 - elapsed / time_goal));
 		if (elapsed >= time_goal) {
 			stop_timer(); /* we're done */
 			ding_dong();
@@ -104,16 +104,16 @@ start_timer()
 
 	g_assert(timer == NULL);
 
+	time_goal = gtk_spin_button_get_value_as_float(
+					GTK_SPIN_BUTTON(time_spin));
+
 	/* UI */
 	gtk_button_set_label(GTK_BUTTON(start_btn), "Stop");
-	gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(time_pbar), 1.0);
 	gtk_widget_hide(time_spin);
-	set_pbar_value(1.0);
+	set_pbar_value(time_goal, 1.0);
 	gtk_widget_show(time_pbar);
 
 	/* Timer and timeout */
-	time_goal = gtk_spin_button_get_value_as_float(
-					GTK_SPIN_BUTTON(time_spin));
 	timer = g_timer_new();
 	g_timer_start(timer);
 	g_timeout_add(500, timeout_cb, NULL); /* every half a second */
