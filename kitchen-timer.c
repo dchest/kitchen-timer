@@ -8,7 +8,6 @@ GtkWidget *time_spin;
 
 GTimer    *timer;
 gdouble    time_goal;  /* how much time to count in seconds */
-guint      timeout_id;
 
 static void start_timer();
 static void stop_timer();
@@ -25,7 +24,7 @@ ding_dong()
    
 	gdk_beep(); /* TODO sound alert */
   
-	/* Create the widgets */
+	/* Show message dialog */
 	dialog = gtk_dialog_new_with_buttons("Message",
                                          GTK_WINDOW(window),
                                          GTK_DIALOG_DESTROY_WITH_PARENT,
@@ -43,14 +42,17 @@ ding_dong()
                              dialog);
 
 	gtk_container_add(GTK_CONTAINER(content_area), label);
-	gtk_widget_show_all(dialog);	
+	gtk_widget_show_all(dialog);
+	
+	/* Set time back to original value */
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON(time_spin), time_goal);
 }
 
 static gboolean
 timeout_cb(gpointer data)
 {
 	gboolean rc = TRUE;
-	gdouble   elapsed;   /* in seconds */
+	gdouble  elapsed;   /* in seconds */
 	
 	gdk_threads_enter();
 	if (timer != NULL) {
@@ -63,9 +65,9 @@ timeout_cb(gpointer data)
 			ding_dong();
 			rc = FALSE;
 		}
-	} else {
+	} else
 		rc = FALSE; /* don't call this cb anymore */
-	}
+
 	gdk_threads_leave();
 	return (rc);
 }
@@ -86,7 +88,7 @@ start_timer()
 					GTK_SPIN_BUTTON(time_spin));
 	timer = g_timer_new();
 	g_timer_start(timer);
-	g_timeout_add(500, timeout_cb, NULL); /* every 1/2 second */
+	g_timeout_add(500, timeout_cb, NULL); /* every half a second */
 
 	g_print("Timer started, goal: %f sec\n", time_goal);
 
