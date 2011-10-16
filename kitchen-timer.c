@@ -11,11 +11,11 @@ gdouble    time_goal;  /* how much time to count in seconds */
 
 static void start_timer();
 static void stop_timer();
+static void ding_dong();
 
 static gboolean timeout_cb(gpointer data);
 static void     start_stop_cb(GtkWidget *widget, gpointer data);
 static void     destroy_cb(GtkWidget *widget, gpointer data);
-static void     ding_dong();
 
 static void
 ding_dong()
