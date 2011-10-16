@@ -14,13 +14,16 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-#include <gtk/gtk.h>
+#include <stdio.h>
+
 #include <glib.h>
+#include <gtk/gtk.h>
 
 static GtkWidget *window;
 static GtkWidget *box;
 static GtkWidget *start_btn;
 static GtkWidget *time_spin;
+static GtkWidget *time_pbar;
 
 static GTimer    *timer;
 static gdouble    time_goal;  /* how much time to count in seconds */
@@ -59,9 +62,15 @@ ding_dong()
 
 	gtk_container_add(GTK_CONTAINER(content_area), label);
 	gtk_widget_show_all(dialog);
-	
-	/* Set time back to original value */
-	gtk_spin_button_set_value(GTK_SPIN_BUTTON(time_spin), time_goal);
+}
+
+static void
+set_pbar_value(gdouble n)
+{
+	char s[256];
+
+	(void)snprintf(s, sizeof(s), "%.0f", n);
+	gtk_progress_bar_set_text(GTK_PROGRESS_BAR(time_pbar), s);
 }
 
 static gboolean
@@ -73,9 +82,9 @@ timeout_cb(gpointer data)
 	gdk_threads_enter();
 	if (timer != NULL) {
 		elapsed = g_timer_elapsed(timer, NULL);
-		/* g_print("elapsed: %f\n", elapsed); */
-		gtk_spin_button_set_value(GTK_SPIN_BUTTON(time_spin),
-					  time_goal - elapsed);
+		set_pbar_value(time_goal - elapsed);
+		gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(time_pbar),
+				MAX(0.0, 1.0 - elapsed / time_goal));
 		if (elapsed >= time_goal) {
 			stop_timer(); /* we're done */
 			ding_dong();
@@ -96,9 +105,12 @@ start_timer()
 	g_assert(timer == NULL);
 
 	/* UI */
-	gtk_widget_set_sensitive(GTK_WIDGET(time_spin), FALSE);
 	gtk_button_set_label(GTK_BUTTON(start_btn), "Stop");
-	
+	gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(time_pbar), 1.0);
+	gtk_widget_hide(time_spin);
+	set_pbar_value(1.0);
+	gtk_widget_show(time_pbar);
+
 	/* Timer and timeout */
 	time_goal = gtk_spin_button_get_value_as_float(
 					GTK_SPIN_BUTTON(time_spin));
@@ -125,6 +137,8 @@ stop_timer()
 	/* UI */
 	gtk_widget_set_sensitive(GTK_WIDGET(time_spin), TRUE);
 	gtk_button_set_label(GTK_BUTTON(start_btn), "Start");
+	gtk_widget_hide(time_pbar);
+	gtk_widget_show(time_spin);
 	g_print("Timer stopped\n");
 
 	gdk_threads_leave();
@@ -165,6 +179,10 @@ main(int argc, char *argv[])
 	/* Spin button with time */
 	time_spin = gtk_spin_button_new_with_range(0, 360, 1);
 	gtk_box_pack_start(GTK_BOX(box), time_spin, TRUE, TRUE, 0);
+
+	/* Progress bar */
+	time_pbar = gtk_progress_bar_new();
+	gtk_box_pack_start(GTK_BOX(box), time_pbar, TRUE, TRUE, 0);
 	
 	/* Start button */
 	start_btn = gtk_button_new_with_label("Start");
