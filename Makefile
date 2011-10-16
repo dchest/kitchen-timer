@@ -1,10 +1,10 @@
 CC=gcc
 CFLAGS=-g -Wall
-PKG_CONFIG=`pkg-config --libs --cflags gtk+-2.0`
+PKG_CONFIG=-export-dynamic `pkg-config --libs --cflags gtk+-2.0`
 
 SRCS=kitchen-timer.c
 OBJS=$(SRCS:.c=.o)
-EXE =kitchen-timer
+EXE=kitchen-timer
 
 all: $(SRCS) $(EXE)
 
