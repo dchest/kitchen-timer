@@ -66,11 +66,15 @@ ding_dong()
 }
 
 static void
-set_pbar_value(gdouble label, gdouble frac)
+set_pbar_value(gdouble left, gdouble frac)
 {
 	char s[256];
+	int  min, sec;
 
-	(void)snprintf(s, sizeof(s), "%.0f", label);
+	min = left / 60;
+	sec = left - min * 60;
+
+	(void)snprintf(s, sizeof(s), "%d:%02d", min, sec);
 	gtk_progress_bar_set_text(GTK_PROGRESS_BAR(time_pbar), s);
 	gtk_progress_bar_set_fraction(GTK_PROGRESS_BAR(time_pbar), frac);
 }
@@ -84,7 +88,7 @@ timeout_cb(gpointer data)
 	gdk_threads_enter();
 	if (timer != NULL) {
 		elapsed = g_timer_elapsed(timer, NULL);
-		set_pbar_value((time_goal - elapsed) / 60.0, 
+		set_pbar_value(time_goal - elapsed, 
 			       MAX(0.0, 1.0 - elapsed / time_goal));
 		if (elapsed >= time_goal) {
 			stop_timer(); /* we're done */
@@ -111,7 +115,7 @@ start_timer()
 	/* UI */
 	gtk_button_set_label(GTK_BUTTON(start_btn), "Stop");
 	gtk_widget_hide(time_spin);
-	set_pbar_value(time_goal / 60.0, 1.0);
+	set_pbar_value(time_goal, 1.0);
 	gtk_widget_show(time_pbar);
 
 	/* Timer and timeout */
