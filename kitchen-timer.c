@@ -84,7 +84,7 @@ timeout_cb(gpointer data)
 	gdk_threads_enter();
 	if (timer != NULL) {
 		elapsed = g_timer_elapsed(timer, NULL);
-		set_pbar_value(time_goal - elapsed, 
+		set_pbar_value((time_goal - elapsed) / 60.0, 
 			       MAX(0.0, 1.0 - elapsed / time_goal));
 		if (elapsed >= time_goal) {
 			stop_timer(); /* we're done */
@@ -105,13 +105,13 @@ start_timer()
 
 	g_assert(timer == NULL);
 
-	time_goal = gtk_spin_button_get_value_as_float(
+	time_goal = 60.0 * gtk_spin_button_get_value_as_float(
 					GTK_SPIN_BUTTON(time_spin));
 
 	/* UI */
 	gtk_button_set_label(GTK_BUTTON(start_btn), "Stop");
 	gtk_widget_hide(time_spin);
-	set_pbar_value(time_goal, 1.0);
+	set_pbar_value(time_goal / 60.0, 1.0);
 	gtk_widget_show(time_pbar);
 
 	/* Timer and timeout */
@@ -136,7 +136,6 @@ stop_timer()
 	timer = NULL;
 
 	/* UI */
-	gtk_widget_set_sensitive(GTK_WIDGET(time_spin), TRUE);
 	gtk_button_set_label(GTK_BUTTON(start_btn), "Start");
 	gtk_widget_hide(time_pbar);
 	gtk_widget_show(time_spin);
