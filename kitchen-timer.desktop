@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=0.1
+Name=Kitchen Timer
+Comment=Simple kitchen timer
+Exec=kitchen-timer
+Icon=clock
+Terminal=false
+Type=Application
+Categories=Utility;
+StartupNotify=true

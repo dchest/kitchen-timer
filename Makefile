@@ -19,3 +19,6 @@ $(EXE): $(OBJ)
 clean:
 	rm $(OBJ) $(EXE)
 
+install:
+	cp kitchen-timer.desktop /usr/share/applications/
+	mv kitchen-timer /usr/local/bin/
