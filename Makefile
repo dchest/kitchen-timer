@@ -1,23 +1,21 @@
 CC=gcc
-CFLAGS=-c -Wall -O2
-CFLAGS+=`pkg-config --cflags gtk+-2.0`
-GTK_LIBS=`pkg-config --libs gtk+-2.0`
+CFLAGS=-Wall -O2
+CFLAGS+=`pkg-config --cflags gtk+-2.0 glib-2.0`
+GTKLIBS=`pkg-config --libs gtk+-2.0 glib-2.0`
 
 
 SRC=kitchen-timer.c
-OBJ=$(SRC:.c=.o)
 EXE=kitchen-timer
+OBJS = kitchen-timer.o
 
-all: $(SRC) $(EXE)
+$(EXE): $(OBJS)
+	$(CC) $(LDFLAGS) -o $(EXE) $(OBJS) $(GTKLIBS)
 
-$(EXE): $(OBJ)
-	$(CC) $(LDFLAGS) $(GTK_LIBS) $(OBJ) -o $@
-
-.c.o:
-	$(CC) $(CFLAGS) $< -o $@
+kitchen-timer.o: kitchen-timer.c
+	$(CC) $(CFLAGS) -c kitchen-timer.c
 
 clean:
-	rm $(OBJ) $(EXE)
+	rm $(OBJS) $(EXE)
 
 install:
 	cp kitchen-timer.desktop /usr/share/applications/
